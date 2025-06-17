@@ -22,7 +22,7 @@ type LoaderTicketCSV struct {
 }
 
 // Load loads the tickets from the CSV file
-func (t *LoaderTicketCSV) Load() (ta map[int]internal.TicketAttributes, err error) {
+func (t *LoaderTicketCSV) Load() (ta map[int]internal.Ticket, err error) {
 	// open the file
 	f, err := os.Open(t.filePath)
 	if err != nil {
@@ -35,7 +35,8 @@ func (t *LoaderTicketCSV) Load() (ta map[int]internal.TicketAttributes, err erro
 	r := csv.NewReader(f)
 
 	// read the records
-	ta = make(map[int]internal.TicketAttributes)
+	ta = make(map[int]internal.Ticket)
+
 	for {
 		record, errRead := r.Read()
 		if errRead != nil {
@@ -64,16 +65,17 @@ func (t *LoaderTicketCSV) Load() (ta map[int]internal.TicketAttributes, err erro
 			return
 		}
 
-		ticket := internal.TicketAttributes{
-			Name:    record[1],
-			Email:   record[2],
-			Country: record[3],
-			Hour:    record[4],
-			Price:   price,
+		ta[id] = internal.Ticket{
+			Id: id,
+			Attributes: internal.TicketAttributes{
+				Name:    record[1],
+				Email:   record[2],
+				Country: record[3],
+				Hour:    record[4],
+				Price:   price,
+			},
 		}
 
-		ta[id] = ticket
 	}
-
 	return
 }
