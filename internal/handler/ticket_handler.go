@@ -2,6 +2,8 @@ package handler
 
 import (
 	"app/internal"
+	"app/pkg/apperrors"
+	"errors"
 	"net/http"
 
 	"github.com/bootcamp-go/web/response"
@@ -39,7 +41,10 @@ func (h *TicketDefault) GetAll() http.HandlerFunc {
 		tickets, err := h.sv.GetAll(ctx)
 
 		if err != nil {
-			response.JSON(w, http.StatusBadRequest, "")
+			if errors.Is(err, apperrors.ErrEmptyData) {
+				response.JSON(w, http.StatusBadRequest, err.Error())
+			}
+			response.JSON(w, http.StatusBadRequest, "Somethings wrong!!")
 		}
 		response.JSON(w, http.StatusOK, map[string]any{
 			"data": tickets,

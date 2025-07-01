@@ -2,6 +2,7 @@ package repository
 
 import (
 	"app/internal"
+	"app/pkg/apperrors"
 	"context"
 )
 
@@ -27,6 +28,10 @@ func (r *RepositoryTicketMap) GetAll(ctx context.Context) (t map[int]internal.Ti
 	t = make(map[int]internal.Ticket, len(r.db))
 	for k, v := range r.db {
 		t[k] = v
+	}
+
+	if len(t) == 0 {
+		err = apperrors.ErrEmptyData
 	}
 
 	return

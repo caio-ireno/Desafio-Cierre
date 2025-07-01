@@ -3,5 +3,6 @@ package apperrors
 import "errors"
 
 var (
-	ErrLoadCSV = errors.New("failed to Load CSV")
+	ErrLoadCSV   = errors.New("failed to Load CSV")
+	ErrEmptyData = errors.New("empty data")
 )

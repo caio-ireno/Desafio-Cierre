@@ -18,7 +18,7 @@ type ServiceTicketDefault struct {
 func (s *ServiceTicketDefault) GetAll(ctx context.Context) (ticket map[int]internal.Ticket, err error) {
 	ticket, err = s.rp.GetAll(ctx)
 	if err != nil {
-		return nil, err
+		return
 	}
 
 	return
