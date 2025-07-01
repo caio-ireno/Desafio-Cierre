@@ -1,0 +1,15 @@
+# Etapa 1: build
+FROM golang:1.24.2 AS dev
+
+WORKDIR /app
+
+COPY go.mod go.sum Makefile ./
+RUN go mod download
+
+RUN go install github.com/air-verse/air@latest
+
+COPY . .
+
+EXPOSE 8080
+
+CMD ["make"]

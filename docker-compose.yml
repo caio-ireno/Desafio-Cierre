@@ -1,0 +1,38 @@
+version: '3.8'
+services:
+
+  app:
+      build:
+        context: .
+        dockerfile: dockerfile
+      container_name: go-api
+      volumes:
+        - .:/app
+      ports:
+        - '8080:8080'
+      depends_on:
+        - db
+      environment:
+        - DB_HOST=db
+        - DB_PORT=3306
+        - DB_USER=root
+        - DB_PASSWORD=root
+        - DB_NAME=mysqlDB
+
+  db:
+    image: mysql/mysql-server:latest
+    container_name: tickets
+    restart: always
+    environment:
+      - MYSQL_DATABASE=mysqlDB
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_ROOT_HOST=%
+    ports:
+      - '3306:3306'
+    volumes:
+      - mysql-volume:/var/lib/mysql
+      - ./mysql-volume/init.sql:/docker-entrypoint-initdb.d/init.sql
+
+volumes:
+  mysql-volume:
+    driver: local
