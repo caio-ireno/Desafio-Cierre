@@ -5,10 +5,16 @@ import (
 	"app/internal/loader"
 	"app/internal/repository"
 	"app/internal/service"
+	"context"
+	"database/sql"
+	"fmt"
 	"net/http"
+	"os"
 
+	// ...outros imports...
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
+	_ "github.com/go-sql-driver/mysql"
 )
 
 type ConfigAppDefault struct {
@@ -38,12 +44,31 @@ func NewServerChi(cfg *ConfigAppDefault) *ApplicationDefault {
 }
 
 type ApplicationDefault struct {
-	rt         *chi.Mux
 	serverAddr string
 	dbFilePath string
 }
 
 func (a *ApplicationDefault) SetUp() (err error) {
+
+	// --- CONEXÃO COM O BANCO ---
+	dsn := "root:root@tcp(db:3306)/tickets" // ajuste conforme suas variáveis de ambiente
+	dbsql, err := sql.Open("mysql", dsn)
+	if err != nil {
+		fmt.Println("Erro ao conectar no banco:", err)
+		os.Exit(1)
+	}
+	defer dbsql.Close()
+
+	// --- IMPORTAÇÃO DO CSV PARA O BANCO ---
+	ctx := context.Background()
+
+	loaderDB := loader.NewLoaderTicketCSV(a.dbFilePath)
+	err = loaderDB.LoadTicketsToDB(ctx, dbsql, a.dbFilePath)
+	if err != nil {
+		fmt.Println("Erro ao importar CSV:", err)
+		os.Exit(1)
+	}
+
 	ld := loader.NewLoaderTicketCSV(a.dbFilePath)
 	db, err := ld.Load()
 	lastId := len(db)
@@ -62,6 +87,7 @@ func (a *ApplicationDefault) SetUp() (err error) {
 	rt.Use(middleware.Recoverer)
 
 	rt.Route("/tickets", func(rt chi.Router) {
+
 		rt.Get("/", hd.GetAll())
 		rt.Get("/total_amount", hd.GetTotalAmountTickets())
 
