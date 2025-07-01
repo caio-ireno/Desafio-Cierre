@@ -38,3 +38,11 @@ func (s *ServiceTicketDefault) Update(ctx context.Context, ticket internal.Ticke
 	}
 	return
 }
+
+func (s *ServiceTicketDefault) Create(ctx context.Context, ticket internal.TicketAttributes) (ticketCreated internal.Ticket, err error) {
+	ticketCreated, err = s.rp.Create(ctx, ticket)
+	if err != nil {
+		return
+	}
+	return
+}

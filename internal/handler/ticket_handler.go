@@ -94,3 +94,38 @@ func (h *TicketDefault) Update() http.HandlerFunc {
 	}
 
 }
+
+func (h *TicketDefault) Create() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+
+		ctx := r.Context()
+
+		var reqBody internal.TicketAttributes
+
+		err := json.NewDecoder(r.Body).Decode(&reqBody)
+
+		if err != nil {
+			response.JSON(w, http.StatusBadRequest, "Invalid data")
+			return
+		}
+
+		err = reqBody.Validate()
+
+		if err != nil {
+			response.JSON(w, http.StatusBadRequest, err.Error())
+			return
+		}
+
+		tickets, err := h.sv.Create(ctx, reqBody)
+		if err != nil {
+			response.JSON(w, http.StatusBadRequest, "Somethings wrong!!")
+			return
+		}
+
+		response.JSON(w, http.StatusOK, map[string]any{
+			"data": tickets,
+		})
+
+	}
+
+}

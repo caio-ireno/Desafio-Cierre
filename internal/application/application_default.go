@@ -66,6 +66,7 @@ func (a *ApplicationDefault) SetUp() (err error) {
 		rt.Get("/total_amount", hd.GetTotalAmountTickets())
 
 		rt.Patch("/update/{id}", hd.Update())
+		rt.Post("/", hd.Create())
 	})
 
 	err = http.ListenAndServe(a.serverAddr, rt)

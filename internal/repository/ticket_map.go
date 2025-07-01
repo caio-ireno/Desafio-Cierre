@@ -82,3 +82,16 @@ func (r *RepositoryTicketMap) Update(ctx context.Context, ticket internal.Ticket
 	ticketUpdate = v
 	return
 }
+
+func (r *RepositoryTicketMap) Create(ctx context.Context, ticket internal.TicketAttributes) (ticketCreated internal.Ticket, err error) {
+	lastId := len(r.db)
+	NewId := lastId + 1
+
+	ticketCreated = internal.Ticket{
+		Id:         NewId,
+		Attributes: ticket,
+	}
+
+	r.db[ticketCreated.Id] = ticketCreated
+	return
+}
