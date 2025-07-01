@@ -20,7 +20,6 @@ func (s *ServiceTicketDefault) GetAll(ctx context.Context) (ticket map[int]inter
 	if err != nil {
 		return
 	}
-
 	return
 }
 
@@ -29,6 +28,13 @@ func (s *ServiceTicketDefault) GetTotalAmountTickets(ctx context.Context) (total
 	if err != nil {
 		return 0, err
 	}
+	return
+}
 
+func (s *ServiceTicketDefault) Update(ctx context.Context, ticket internal.TicketAttributesPatch, id int) (ticketUpdate internal.Ticket, err error) {
+	ticketUpdate, err = s.rp.Update(ctx, ticket, id)
+	if err != nil {
+		return
+	}
 	return
 }

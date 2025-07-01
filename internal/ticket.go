@@ -1,6 +1,9 @@
 package internal
 
-import "context"
+import (
+	"context"
+	"errors"
+)
 
 // TicketAttributes is an struct that represents a ticket
 type TicketAttributes struct {
@@ -24,13 +27,44 @@ type Ticket struct {
 	Attributes TicketAttributes `json:"attributes"`
 }
 
+type TicketAttributesPatch struct {
+	Name    *string  `json:"name,omitempty"`
+	Email   *string  `json:"email,omitempty"`
+	Country *string  `json:"country,omitempty"`
+	Hour    *string  `json:"hour,omitempty"`
+	Price   *float64 `json:"price,omitempty"`
+}
+
+func (ta *TicketAttributes) Validate() error {
+	if ta.Name == "" {
+		return errors.New("name is required")
+	}
+	if ta.Email == "" {
+		return errors.New("email is required")
+	}
+	if ta.Country == "" {
+		return errors.New("country is required")
+	}
+	if ta.Hour == "" {
+		return errors.New("hour is required")
+	}
+	if ta.Price <= 0 {
+		return errors.New("price must be greater than zero")
+	}
+	return nil
+}
+
 type RepositoryTicket interface {
 	GetAll(ctx context.Context) (t map[int]Ticket, err error)
 	GetTotalAmountTickets(ctx context.Context) (total int, err error)
 	GetTicketByDestinationCountry(ctx context.Context, country string) (t map[int]TicketAttributes, err error)
+
+	Update(ctx context.Context, ticket TicketAttributesPatch, id int) (t Ticket, err error)
 }
 
 type ServiceTicket interface {
 	GetAll(ctx context.Context) (t map[int]Ticket, err error)
 	GetTotalAmountTickets(ctx context.Context) (total int, err error)
+
+	Update(ctx context.Context, ticket TicketAttributesPatch, id int) (t Ticket, err error)
 }

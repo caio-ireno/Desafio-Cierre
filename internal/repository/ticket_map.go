@@ -4,6 +4,7 @@ import (
 	"app/internal"
 	"app/pkg/apperrors"
 	"context"
+	"reflect"
 )
 
 func NewRepositoryTicketMap(dbFile map[int]internal.Ticket, lastId int) *RepositoryTicketMap {
@@ -52,5 +53,32 @@ func (r *RepositoryTicketMap) GetTotalAmountTickets(ctx context.Context) (total 
 	for range r.db {
 		total++
 	}
+	return
+}
+
+func (r *RepositoryTicketMap) Update(ctx context.Context, ticket internal.TicketAttributesPatch, id int) (ticketUpdate internal.Ticket, err error) {
+
+	v, ok := r.db[id]
+
+	if !ok {
+		err = apperrors.ErrNotFound
+		return
+	}
+	// O pacote reflect do Go permite inspecionar e manipular valores em tempo de execução, mesmo sem saber seus tipos exatos em tempo de compilação.
+	// No seu código, ele é usado para atualizar dinamicamente apenas os campos enviados no PATCH, sem precisar de vários
+	orig := &v.Attributes
+	patchVal := reflect.ValueOf(ticket)     // struct PATCH recebido (com ponteiros)
+	origVal := reflect.ValueOf(orig).Elem() // struct original a ser atualizado
+
+	for i := 0; i < patchVal.NumField(); i++ {
+		patchField := patchVal.Field(i)
+		if !patchField.IsNil() {
+			origField := origVal.Field(i)
+			origField.Set(reflect.Indirect(patchField))
+		}
+	}
+
+	r.db[id] = v
+	ticketUpdate = v
 	return
 }
