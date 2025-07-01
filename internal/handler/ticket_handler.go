@@ -19,8 +19,32 @@ type TicketDefault struct {
 
 func (h *TicketDefault) GetTotalAmountTickets() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		ctx := r.Context()
+		total, err := h.sv.GetTotalAmountTickets(ctx)
 
-		response.JSON(w, http.StatusOK, nil)
+		if err != nil {
+			response.JSON(w, http.StatusBadRequest, "")
+		}
+		response.JSON(w, http.StatusOK, map[string]any{
+			"data": total,
+		})
+
+	}
+
+}
+
+func (h *TicketDefault) GetAll() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		ctx := r.Context()
+		tickets, err := h.sv.GetAll(ctx)
+
+		if err != nil {
+			response.JSON(w, http.StatusBadRequest, "")
+		}
+		response.JSON(w, http.StatusOK, map[string]any{
+			"data": tickets,
+		})
+
 	}
 
 }

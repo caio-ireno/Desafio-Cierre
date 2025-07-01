@@ -23,10 +23,10 @@ type RepositoryTicketMap struct {
 	lastId int
 }
 
-func (r *RepositoryTicketMap) Get(ctx context.Context) (t map[int]internal.TicketAttributes, err error) {
-	t = make(map[int]internal.TicketAttributes, len(r.db))
+func (r *RepositoryTicketMap) GetAll(ctx context.Context) (t map[int]internal.Ticket, err error) {
+	t = make(map[int]internal.Ticket, len(r.db))
 	for k, v := range r.db {
-		t[k] = v.Attributes
+		t[k] = v
 	}
 
 	return
@@ -40,5 +40,12 @@ func (r *RepositoryTicketMap) GetTicketByDestinationCountry(ctx context.Context,
 		}
 	}
 
+	return
+}
+
+func (r *RepositoryTicketMap) GetTotalAmountTickets(ctx context.Context) (total int, err error) {
+	for range r.db {
+		total++
+	}
 	return
 }

@@ -62,7 +62,8 @@ func (a *ApplicationDefault) SetUp() (err error) {
 	rt.Use(middleware.Recoverer)
 
 	rt.Route("/tickets", func(rt chi.Router) {
-		rt.Get("/get", hd.GetTotalAmountTickets())
+		rt.Get("/", hd.GetAll())
+		rt.Get("/total_amount", hd.GetTotalAmountTickets())
 	})
 
 	err = http.ListenAndServe(a.serverAddr, rt)
