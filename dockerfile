@@ -1,4 +1,3 @@
-# Etapa 1: build
 FROM golang:1.24.2 AS dev
 
 WORKDIR /app
@@ -12,4 +11,4 @@ COPY . .
 
 EXPOSE 8080
 
-CMD ["make"]
+CMD ["air"]
