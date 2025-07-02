@@ -2,6 +2,7 @@ package repository
 
 import (
 	"app/internal"
+	"app/pkg/apperrors"
 	"context"
 	"database/sql"
 )
@@ -17,18 +18,26 @@ type mysqlRepository struct {
 }
 
 func (r mysqlRepository) GetAll(ctx context.Context) (t map[int]internal.Ticket, err error) {
-	println("GetAll chamado no repository MySQL!")
-	t = make(map[int]internal.Ticket)
-	t[1] = internal.Ticket{
-		Id: 1,
-		Attributes: internal.TicketAttributes{
-			Name:    "Teste",
-			Email:   "teste@email.com",
-			Country: "Brasil",
-			Hour:    "10:00",
-			Price:   100.0,
-		},
+	rows, err := r.db.Query("SELECT id, name, email, country, hour, price FROM tickets;")
+	if err != nil {
+		err = apperrors.ErrQueryDB
+		return
 	}
+	defer rows.Close()
+
+	t = make(map[int]internal.Ticket)
+	for rows.Next() {
+		var ticket internal.Ticket
+		var attrs internal.TicketAttributes
+		err = rows.Scan(&ticket.Id, &attrs.Name, &attrs.Email, &attrs.Country, &attrs.Hour, &attrs.Price)
+		if err != nil {
+			err = apperrors.ErrScanDB
+			return
+		}
+		ticket.Attributes = attrs
+		t[ticket.Id] = ticket
+	}
+
 	return
 }
 
