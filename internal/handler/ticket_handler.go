@@ -166,6 +166,7 @@ func (h *TicketDefault) AddCsv() http.HandlerFunc {
 
 		tickets, err := ld.Load()
 		if err != nil {
+			response.JSON(w, http.StatusBadRequest, "Error to load CSV!!")
 			return
 		}
 		total, err := h.sv.AddCsv(ctx, tickets)
