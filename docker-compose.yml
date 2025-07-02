@@ -20,7 +20,7 @@ services:
         - DB_NAME=mysqlDB
 
   db:
-    image: mysql/mysql-server:latest
+    image: mysql/mysql-server:8.0.32-1.2.11-server
     container_name: tickets
     restart: always
     environment:
