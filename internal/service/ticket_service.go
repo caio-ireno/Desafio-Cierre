@@ -23,6 +23,14 @@ func (s *ServiceTicketDefault) GetAll(ctx context.Context) (ticket map[int]inter
 	return
 }
 
+func (s *ServiceTicketDefault) GetById(ctx context.Context, id int) (ticket internal.Ticket, err error) {
+	ticket, err = s.rp.GetById(ctx, id)
+	if err != nil {
+		return
+	}
+	return
+}
+
 func (s *ServiceTicketDefault) GetTotalAmountTickets(ctx context.Context) (total int, err error) {
 	total, err = s.rp.GetTotalAmountTickets(ctx)
 	if err != nil {

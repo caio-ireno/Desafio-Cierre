@@ -25,6 +25,7 @@ func (router *router) TicketsRoutes() http.Handler {
 
 	r.Route("/tickets", func(r chi.Router) {
 		r.Get("/", handler.GetAll())
+		r.Get("/{id}", handler.GetById())
 		r.Post("/", handler.Create())
 		r.Get("/total_amount", handler.GetTotalAmountTickets())
 		r.Patch("/update/{id}", handler.Update())

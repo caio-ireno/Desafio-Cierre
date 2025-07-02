@@ -35,7 +35,34 @@ func (h *TicketDefault) GetTotalAmountTickets() http.HandlerFunc {
 	}
 
 }
+func (h *TicketDefault) GetById() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		ctx := r.Context()
 
+		idStr := chi.URLParam(r, "id")
+		id, err := strconv.Atoi(idStr)
+
+		if err != nil {
+			http.Error(w, "invalid id", http.StatusBadRequest)
+			return
+		}
+		ticket, err := h.sv.GetById(ctx, id)
+
+		if err != nil {
+			if errors.Is(err, apperrors.ErrNotFound) {
+				response.JSON(w, http.StatusNotFound, err.Error())
+				return
+			}
+			response.JSON(w, http.StatusBadRequest, err.Error())
+			return
+		}
+		response.JSON(w, http.StatusOK, map[string]any{
+			"data": ticket,
+		})
+
+	}
+
+}
 func (h *TicketDefault) GetAll() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()

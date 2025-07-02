@@ -5,6 +5,7 @@ import (
 	"app/pkg/apperrors"
 	"context"
 	"database/sql"
+	"fmt"
 )
 
 func NewRepositoryTicket(db *sql.DB) internal.RepositoryTicket {
@@ -41,8 +42,21 @@ func (r mysqlRepository) GetAll(ctx context.Context) (t map[int]internal.Ticket,
 	return
 }
 
-func (r *mysqlRepository) GetTicketByDestinationCountry(ctx context.Context, country string) (t map[int]internal.TicketAttributes, err error) {
+func (r mysqlRepository) GetById(ctx context.Context, id int) (t internal.Ticket, err error) {
+	row := r.db.QueryRow("SELECT id, name, email, country, hour, price FROM tickets WHERE id = ?;", id)
+	var attrs internal.TicketAttributes
+	err = row.Scan(&t.Id, &attrs.Name, &attrs.Email, &attrs.Country, &attrs.Hour, &attrs.Price)
+	if err == sql.ErrNoRows {
+		fmt.Println("Erro No rows", err)
+		err = apperrors.ErrNotFound
+		return
+	}
+	if err != nil {
+		fmt.Println("Erro scan", err)
+		return t, apperrors.ErrScanDB
+	}
 
+	t.Attributes = attrs
 	return
 }
 
