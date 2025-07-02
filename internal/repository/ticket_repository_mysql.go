@@ -61,7 +61,16 @@ func (r mysqlRepository) GetById(ctx context.Context, id int) (t internal.Ticket
 }
 
 func (r *mysqlRepository) GetTotalAmountTickets(ctx context.Context) (total int, err error) {
+	err = r.db.QueryRow("SELECT COUNT(id) FROM tickets;").Scan(&total)
+	if total == 0 {
+		err = apperrors.ErrEmptyData
+		return
+	}
 
+	if err != nil {
+		err = apperrors.ErrQueryDB
+		return
+	}
 	return
 }
 
