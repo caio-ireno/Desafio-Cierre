@@ -1,7 +1,7 @@
 package handler
 
 import (
-	"app/internal"
+	"app/internal/domain"
 	"app/internal/loader"
 	"app/pkg/apperrors"
 	"encoding/json"
@@ -13,12 +13,12 @@ import (
 	"github.com/go-chi/chi/v5"
 )
 
-func NewHandlerTicketDefault(sv internal.ServiceTicket) *TicketDefault {
+func NewHandlerTicketDefault(sv domain.ServiceTicket) *TicketDefault {
 	return &TicketDefault{sv: sv}
 }
 
 type TicketDefault struct {
-	sv internal.ServiceTicket
+	sv domain.ServiceTicket
 }
 
 func (h *TicketDefault) GetTotalAmountTickets() http.HandlerFunc {
@@ -97,7 +97,7 @@ func (h *TicketDefault) Update() http.HandlerFunc {
 			return
 		}
 
-		var reqBody internal.TicketAttributesPatch
+		var reqBody domain.TicketAttributesPatch
 
 		err = json.NewDecoder(r.Body).Decode(&reqBody)
 
@@ -128,7 +128,7 @@ func (h *TicketDefault) Create() http.HandlerFunc {
 
 		ctx := r.Context()
 
-		var reqBody internal.TicketAttributes
+		var reqBody domain.TicketAttributes
 
 		err := json.NewDecoder(r.Body).Decode(&reqBody)
 

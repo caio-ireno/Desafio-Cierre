@@ -1,7 +1,7 @@
 package loader
 
 import (
-	"app/internal"
+	"app/internal/domain"
 	"encoding/csv"
 	"fmt"
 	"io"
@@ -22,7 +22,7 @@ type LoaderTicketCSV struct {
 }
 
 // Load loads the tickets from the CSV file
-func (t *LoaderTicketCSV) Load() (ta map[int]internal.Ticket, err error) {
+func (t *LoaderTicketCSV) Load() (ta map[int]domain.Ticket, err error) {
 	// open the file
 	f, err := os.Open(t.filePath)
 	if err != nil {
@@ -35,7 +35,7 @@ func (t *LoaderTicketCSV) Load() (ta map[int]internal.Ticket, err error) {
 	r := csv.NewReader(f)
 
 	// read the records
-	ta = make(map[int]internal.Ticket)
+	ta = make(map[int]domain.Ticket)
 
 	for {
 		record, errRead := r.Read()
@@ -65,9 +65,9 @@ func (t *LoaderTicketCSV) Load() (ta map[int]internal.Ticket, err error) {
 			return
 		}
 
-		ta[id] = internal.Ticket{
+		ta[id] = domain.Ticket{
 			Id: id,
-			Attributes: internal.TicketAttributes{
+			Attributes: domain.TicketAttributes{
 				Name:    record[1],
 				Email:   record[2],
 				Country: record[3],

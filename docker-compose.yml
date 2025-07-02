@@ -11,7 +11,8 @@ services:
       ports:
         - '8080:8080'
       depends_on:
-        - db
+        db:
+          condition: service_healthy
       environment:
         - DB_HOST=db
         - DB_PORT=3306
@@ -21,9 +22,10 @@ services:
       networks:
       - tickets
 
+
   db:
     image: mysql/mysql-server:8.0.32-1.2.11-server
-    container_name: tickets
+    container_name: databse
     restart: always
     environment:
       - MYSQL_DATABASE=mysqlDB
@@ -36,8 +38,15 @@ services:
       - ./mysql-volume/init.sql:/docker-entrypoint-initdb.d/init.sql
     networks:
       - tickets
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-proot"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
   portainer:
     platform: linux/x86_64
+    container_name: portainer
     image: portainer/portainer-ce
     restart: always
     ports:

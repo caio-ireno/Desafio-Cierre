@@ -1,7 +1,7 @@
 package repository
 
 import (
-	"app/internal"
+	"app/internal/domain"
 	"context"
 )
 
@@ -13,9 +13,9 @@ func NewRepositoryTicketMock() *RepositoryTicketMap {
 // RepositoryTicketMock implements the repository interface for tickets
 type RepositoryTicketMock struct {
 	// FuncGet represents the mock for the Get function
-	FuncGet func() (t map[int]internal.TicketAttributes, err error)
+	FuncGet func() (t map[int]domain.TicketAttributes, err error)
 	// FuncGetTicketsByDestinationCountry
-	FuncGetTicketsByDestinationCountry func(country string) (t map[int]internal.TicketAttributes, err error)
+	FuncGetTicketsByDestinationCountry func(country string) (t map[int]domain.TicketAttributes, err error)
 
 	// Spy verifies if the methods were called
 	Spy struct {
@@ -27,7 +27,7 @@ type RepositoryTicketMock struct {
 }
 
 // GetAll returns all the tickets
-func (r *RepositoryTicketMock) Get(ctx context.Context) (t map[int]internal.TicketAttributes, err error) {
+func (r *RepositoryTicketMock) Get(ctx context.Context) (t map[int]domain.TicketAttributes, err error) {
 	// spy
 	r.Spy.Get++
 
@@ -37,7 +37,7 @@ func (r *RepositoryTicketMock) Get(ctx context.Context) (t map[int]internal.Tick
 }
 
 // GetTicketsByDestinationCountry returns the tickets filtered by destination country
-func (r *RepositoryTicketMock) GetTicketsByDestinationCountry(ctx context.Context, country string) (t map[int]internal.TicketAttributes, err error) {
+func (r *RepositoryTicketMock) GetTicketsByDestinationCountry(ctx context.Context, country string) (t map[int]domain.TicketAttributes, err error) {
 	// spy
 	r.Spy.GetTicketsByDestinationCountry++
 

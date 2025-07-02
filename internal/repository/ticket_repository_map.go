@@ -1,14 +1,14 @@
 package repository
 
 import (
-	"app/internal"
+	"app/internal/domain"
 	"app/pkg/apperrors"
 	"context"
 	"reflect"
 )
 
-func NewRepositoryTicketMap(dbFile map[int]internal.Ticket, lastId int) *RepositoryTicketMap {
-	defaultDb := make(map[int]internal.Ticket)
+func NewRepositoryTicketMap(dbFile map[int]domain.Ticket, lastId int) *RepositoryTicketMap {
+	defaultDb := make(map[int]domain.Ticket)
 
 	if dbFile != nil {
 		defaultDb = dbFile
@@ -21,12 +21,12 @@ func NewRepositoryTicketMap(dbFile map[int]internal.Ticket, lastId int) *Reposit
 }
 
 type RepositoryTicketMap struct {
-	db     map[int]internal.Ticket
+	db     map[int]domain.Ticket
 	lastId int
 }
 
-func (r *RepositoryTicketMap) GetAll(ctx context.Context) (t map[int]internal.Ticket, err error) {
-	t = make(map[int]internal.Ticket, len(r.db))
+func (r *RepositoryTicketMap) GetAll(ctx context.Context) (t map[int]domain.Ticket, err error) {
+	t = make(map[int]domain.Ticket, len(r.db))
 	for k, v := range r.db {
 		t[k] = v
 	}
@@ -38,8 +38,8 @@ func (r *RepositoryTicketMap) GetAll(ctx context.Context) (t map[int]internal.Ti
 	return
 }
 
-func (r *RepositoryTicketMap) GetTicketByDestinationCountry(ctx context.Context, country string) (t map[int]internal.TicketAttributes, err error) {
-	t = make(map[int]internal.TicketAttributes)
+func (r *RepositoryTicketMap) GetTicketByDestinationCountry(ctx context.Context, country string) (t map[int]domain.TicketAttributes, err error) {
+	t = make(map[int]domain.TicketAttributes)
 	for k, v := range r.db {
 		if v.Attributes.Country == country {
 			t[k] = v.Attributes
@@ -56,7 +56,7 @@ func (r *RepositoryTicketMap) GetTotalAmountTickets(ctx context.Context) (total 
 	return
 }
 
-func (r *RepositoryTicketMap) Update(ctx context.Context, ticket internal.TicketAttributesPatch, id int) (ticketUpdate internal.Ticket, err error) {
+func (r *RepositoryTicketMap) Update(ctx context.Context, ticket domain.TicketAttributesPatch, id int) (ticketUpdate domain.Ticket, err error) {
 
 	v, ok := r.db[id]
 
@@ -83,11 +83,11 @@ func (r *RepositoryTicketMap) Update(ctx context.Context, ticket internal.Ticket
 	return
 }
 
-func (r *RepositoryTicketMap) Create(ctx context.Context, ticket internal.TicketAttributes) (ticketCreated internal.Ticket, err error) {
+func (r *RepositoryTicketMap) Create(ctx context.Context, ticket domain.TicketAttributes) (ticketCreated domain.Ticket, err error) {
 	lastId := len(r.db)
 	NewId := lastId + 1
 
-	ticketCreated = internal.Ticket{
+	ticketCreated = domain.Ticket{
 		Id:         NewId,
 		Attributes: ticket,
 	}

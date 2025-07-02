@@ -1,14 +1,14 @@
 package repository
 
 import (
-	"app/internal"
+	"app/internal/domain"
 	"app/pkg/apperrors"
 	"context"
 	"database/sql"
 	"fmt"
 )
 
-func NewRepositoryTicket(db *sql.DB) internal.RepositoryTicket {
+func NewRepositoryTicket(db *sql.DB) domain.RepositoryTicket {
 	return &mysqlRepository{
 		db: db,
 	}
@@ -18,7 +18,7 @@ type mysqlRepository struct {
 	db *sql.DB
 }
 
-func (r mysqlRepository) GetAll(ctx context.Context) (t map[int]internal.Ticket, err error) {
+func (r mysqlRepository) GetAll(ctx context.Context) (t map[int]domain.Ticket, err error) {
 	rows, err := r.db.Query("SELECT id, name, email, country, hour, price FROM tickets;")
 	if err != nil {
 		err = apperrors.ErrQueryDB
@@ -26,10 +26,10 @@ func (r mysqlRepository) GetAll(ctx context.Context) (t map[int]internal.Ticket,
 	}
 	defer rows.Close()
 
-	t = make(map[int]internal.Ticket)
+	t = make(map[int]domain.Ticket)
 	for rows.Next() {
-		var ticket internal.Ticket
-		var attrs internal.TicketAttributes
+		var ticket domain.Ticket
+		var attrs domain.TicketAttributes
 		err = rows.Scan(&ticket.Id, &attrs.Name, &attrs.Email, &attrs.Country, &attrs.Hour, &attrs.Price)
 		if err != nil {
 			err = apperrors.ErrScanDB
@@ -42,9 +42,9 @@ func (r mysqlRepository) GetAll(ctx context.Context) (t map[int]internal.Ticket,
 	return
 }
 
-func (r mysqlRepository) GetById(ctx context.Context, id int) (t internal.Ticket, err error) {
+func (r mysqlRepository) GetById(ctx context.Context, id int) (t domain.Ticket, err error) {
 	row := r.db.QueryRow("SELECT id, name, email, country, hour, price FROM tickets WHERE id = ?;", id)
-	var attrs internal.TicketAttributes
+	var attrs domain.TicketAttributes
 	err = row.Scan(&t.Id, &attrs.Name, &attrs.Email, &attrs.Country, &attrs.Hour, &attrs.Price)
 	if err == sql.ErrNoRows {
 		fmt.Println("Erro No rows", err)
@@ -74,7 +74,7 @@ func (r *mysqlRepository) GetTotalAmountTickets(ctx context.Context) (total int,
 	return
 }
 
-func (r *mysqlRepository) AddCsv(ctx context.Context, csv map[int]internal.Ticket) (total int, err error) {
+func (r *mysqlRepository) AddCsv(ctx context.Context, csv map[int]domain.Ticket) (total int, err error) {
 	for _, record := range csv {
 		total++
 		_, err = r.db.ExecContext(ctx,
@@ -93,12 +93,12 @@ func (r *mysqlRepository) AddCsv(ctx context.Context, csv map[int]internal.Ticke
 	return
 }
 
-func (r *mysqlRepository) Update(ctx context.Context, ticket internal.TicketAttributesPatch, id int) (ticketUpdate internal.Ticket, err error) {
+func (r *mysqlRepository) Update(ctx context.Context, ticket domain.TicketAttributesPatch, id int) (ticketUpdate domain.Ticket, err error) {
 
 	return
 }
 
-func (r *mysqlRepository) Create(ctx context.Context, ticket internal.TicketAttributes) (ticketCreated internal.Ticket, err error) {
+func (r *mysqlRepository) Create(ctx context.Context, ticket domain.TicketAttributes) (ticketCreated domain.Ticket, err error) {
 
 	return
 }

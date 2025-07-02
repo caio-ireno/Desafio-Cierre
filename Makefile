@@ -4,8 +4,11 @@ start:
 	go run ./cmd/main.go
 dev:
 	air
-up:
+up-build:
 	docker-compose up --build
+
+up:
+	docker-compose up -d
 
 down:
 	docker-compose down
