@@ -1,6 +1,6 @@
-DROP DATABASE IF EXISTS tickets;
-CREATE DATABASE tickets CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-USE tickets;
+DROP DATABASE IF EXISTS mysqlDB;
+CREATE DATABASE mysqlDB CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+USE mysqlDB;
 
 DROP TABLE IF EXISTS `tickets`;
 

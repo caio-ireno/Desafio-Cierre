@@ -1,23 +1,39 @@
 package main
 
 import (
+	"app/db"
 	"app/internal/application"
-	"fmt"
+	"app/internal/loader"
+	"context"
+	"net/http"
+
+	_ "github.com/go-sql-driver/mysql"
+	"github.com/joho/godotenv"
 )
 
 func main() {
-
-	cfg := &application.ConfigAppDefault{
-		ServerAddr: ":8080",
-		DbFilePath: "docs/db/tickets.csv",
+	if err := godotenv.Load(); err != nil {
+		panic(err)
 	}
 
-	app := application.NewServerChi(cfg)
+	if err := db.Connect(); err != nil {
+		panic(err)
+	}
 
-	err := app.SetUp()
+	defer db.GetConnection().Close()
+
+	r := application.NewRouter()
+
+	ld := loader.NewLoaderTicketCSV("docs/db/tickets.csv")
+	tickets, err := ld.Load()
 	if err != nil {
-		fmt.Println("Iniciando....")
-		fmt.Println(err)
 		return
 	}
+
+	err = loader.LoadTicketsToDB(context.Background(), db.GetConnection(), tickets)
+	if err != nil {
+		panic(err)
+	}
+
+	http.ListenAndServe(":8080", r.TicketsRoutes())
 }
