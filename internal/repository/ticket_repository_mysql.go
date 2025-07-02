@@ -74,6 +74,25 @@ func (r *mysqlRepository) GetTotalAmountTickets(ctx context.Context) (total int,
 	return
 }
 
+func (r *mysqlRepository) AddCsv(ctx context.Context, csv map[int]internal.Ticket) (total int, err error) {
+	for _, record := range csv {
+		total++
+		_, err = r.db.ExecContext(ctx,
+			`INSERT INTO tickets (name, email, country, hour, price) VALUES (?, ?, ?, ?, ?)`,
+			record.Attributes.Name,
+			record.Attributes.Email,
+			record.Attributes.Country,
+			record.Attributes.Hour,
+			record.Attributes.Price,
+		)
+		if err != nil {
+			err = apperrors.ErrQueryDB
+			return
+		}
+	}
+	return
+}
+
 func (r *mysqlRepository) Update(ctx context.Context, ticket internal.TicketAttributesPatch, id int) (ticketUpdate internal.Ticket, err error) {
 
 	return

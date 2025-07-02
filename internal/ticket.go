@@ -59,6 +59,8 @@ type RepositoryTicket interface {
 	GetAll(ctx context.Context) (t map[int]Ticket, err error)
 	GetTotalAmountTickets(ctx context.Context) (total int, err error)
 
+	AddCsv(ctx context.Context, csv map[int]Ticket) (total int, err error)
+
 	Update(ctx context.Context, ticket TicketAttributesPatch, id int) (t Ticket, err error)
 	Create(ctx context.Context, ticket TicketAttributes) (t Ticket, err error)
 }
@@ -66,6 +68,8 @@ type RepositoryTicket interface {
 type ServiceTicket interface {
 	GetById(ctx context.Context, id int) (t Ticket, err error)
 	GetAll(ctx context.Context) (t map[int]Ticket, err error)
+
+	AddCsv(ctx context.Context, csv map[int]Ticket) (total int, err error)
 
 	GetTotalAmountTickets(ctx context.Context) (total int, err error)
 

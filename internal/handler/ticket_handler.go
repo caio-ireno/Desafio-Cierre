@@ -2,6 +2,7 @@ package handler
 
 import (
 	"app/internal"
+	"app/internal/loader"
 	"app/pkg/apperrors"
 	"encoding/json"
 	"errors"
@@ -151,6 +152,31 @@ func (h *TicketDefault) Create() http.HandlerFunc {
 
 		response.JSON(w, http.StatusOK, map[string]any{
 			"data": tickets,
+		})
+
+	}
+
+}
+
+func (h *TicketDefault) AddCsv() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		ctx := r.Context()
+
+		ld := loader.NewLoaderTicketCSV("docs/db/tickets.csv")
+
+		tickets, err := ld.Load()
+		if err != nil {
+			return
+		}
+		total, err := h.sv.AddCsv(ctx, tickets)
+		if err != nil {
+			response.JSON(w, http.StatusBadRequest, "Somethings wrong!!")
+			return
+		}
+
+		response.JSON(w, http.StatusOK, map[string]any{
+			"message": "Tickets imported successfully",
+			"total":   total,
 		})
 
 	}
